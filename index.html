@@ -151,24 +151,26 @@
     <div class="mb-3 row">
         <div class="col">
             <label for="vaccination_card" class="form-label">Impfausweis</label>
-            <input class="form-control" type="file" id="vaccination_card" name="vaccination_card">
+            <input class="form-control" type="file" id="vaccination_card" name="vaccination_card" required>
         </div>
         <div class="col">
             <label for="insurance_card" class="form-label">Krankenkassenkarte</label>
-            <input class="form-control" type="file" id="insurance_card" name="insurance_card">
+            <input class="form-control" type="file" id="insurance_card" name="insurance_card" required>
         </div>
     </div>
 
     <h2>Anwesenheit</h2>
     <div class="mb-3">
         <input type="checkbox" class="form-check-input" id="present_week_1" name="present_week_1">
-        <label for="present_week_1" class="form-check-label">Anwesend in der ersten Woche
-            (08.07.2023-15.07.2023)</label>
+        <label for="present_week_1" class="form-check-label">
+            Anwesend in der ersten Woche (08.07.2023-15.07.2023)
+        </label>
     </div>
     <div class="mb-3">
         <input type="checkbox" class="form-check-input" id="present_week_2" name="present_week_2">
-        <label for="present_week_2" class="form-check-label">Anwesend in der zweiten Woche
-            (15.07.2023-22.07.2023)</label>
+        <label for="present_week_2" class="form-check-label">
+            Anwesend in der zweiten Woche (15.07.2023-22.07.2023)
+        </label>
     </div>
 
     <h2>Allgemeines</h2>
@@ -193,6 +195,9 @@
             <button id="signature-clear" class="btn btn-sm btn-secondary" type="button">Neu beginnen</button>
         </div>
     </div>
+    <div class="invalid-feedback" id="form_not_complete_message">
+        Das Formular ist noch nicht vollständig ausgefüllt. Bitte korrigiere die rot umrahmten Felder.
+    </div>
     <button type="button" class="btn btn-primary" id="form_submit">Anmeldung abschicken</button>
 </form>
 <div id="success" style="display: none">
@@ -201,8 +206,9 @@
     <a href=".">Zurück zum Anmeldeformular</a>
 </div>
 <div id="form_send_error" style="display: none" class="alert alert-danger fade show">
-    Leider konnte das Formular nicht abgeschickt werden. Bitte versuch es später noch einmal.
+    Leider konnte das Formular nicht verarbeitet werden. Bitte versuch es später noch einmal.
 </div>
+
 <script>
     async function readFileInputToFormObject(input_id) {
         const reader = new FileReader();
@@ -240,10 +246,13 @@
         const form = document.getElementById("registration_form");
         let success_msg = document.getElementById("success");
         let error_msg = document.getElementById("form_send_error");
+        let form_incomplete_msg = document.getElementById("form_not_complete_message");
 
         document.getElementById("form_submit").addEventListener("click", async event => {
             form.classList.add('was-validated');
-            if (!form.checkValidity()) {
+            let formValid = form.checkValidity();
+            form_incomplete_msg.style.display = formValid ? "none" : "block";
+            if (!formValid) {
                 console.log("form invalid");
                 event.preventDefault();
                 event.stopPropagation();

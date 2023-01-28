@@ -177,12 +177,14 @@
     <p>Vielen Dank für deine Anmeldung! Du wirst in Kürze eine Mail als Bestätigung erhalten.</p>
     <a href=".">Zurück zum Anmeldeformular</a>
 </div>
-<div id="form_send_error" style="display: none">
-    <p>Leider konnte das Formular nicht abgeschickt werden. Bitte versuch es später noch einmal.</p>
+<div id="form_send_error" style="display: none" class="alert alert-danger fade show">
+    Leider konnte das Formular nicht abgeschickt werden. Bitte versuch es später noch einmal.
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const form = document.getElementById("registration_form");
+        let success_msg = document.getElementById("success");
+        let error_msg = document.getElementById("form_send_error");
 
         document.getElementById("form_submit").addEventListener("click", event => {
             form.classList.add('was-validated');
@@ -193,19 +195,22 @@
             } else {
                 const xhr = new XMLHttpRequest();
                 const formData = new FormData(form);
-                xhr.open('POST', window.location.hostname === "localhost" ? 'http://localhost:7071/api/Anmeldung': "https://lageranmeldung.azurewebsites.net/api/Anmeldung?code=X1SFOMDAP9DSTGlr8YM2A1eWg_-_HZ1IVs5tAhdheb7MAzFuRC9u5Q==");
+                let functionURL = window.location.hostname === "localhost"
+                    ? 'http://localhost:7071/api/Anmeldung'
+                    : "https://lageranmeldung.azurewebsites.net/api/Anmeldung?code=X1SFOMDAP9DSTGlr8YM2A1eWg_-_HZ1IVs5tAhdheb7MAzFuRC9u5Q==";
+                xhr.open('POST', functionURL);
                 xhr.setRequestHeader("Content-Type", "application/json");
 
                 xhr.send(JSON.stringify(Object.fromEntries(formData)));
-
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === XMLHttpRequest.DONE) {
-                        form.style.display = "none";
                         if (200 <= xhr.status && xhr.status < 300) {
                             form.reset();
-                            document.getElementById("success").style.display = "initial";
+                            form.style.display = "none";
+                            error_msg.style.display = "none";
+                            success_msg.style.display = "initial";
                         } else {
-                            document.getElementById("form_send_error").style.display = "initial";
+                            error_msg.style.display = "initial";
                         }
                         console.log(xhr.status, xhr.statusText);
                         console.log(xhr.response);
@@ -216,19 +221,17 @@
             return false;
         });
 
-        document.querySelectorAll("input:required").forEach(add_invalid_feedback_if_needed)
-        document.querySelectorAll("textarea:required").forEach(add_invalid_feedback_if_needed)
-        document.querySelectorAll("select:required").forEach(add_invalid_feedback_if_needed)
-
-        function add_invalid_feedback_if_needed(inp) {
-            if (inp.parentNode.querySelector(".invalid-feedback") == null) {
-                let div = document.createElement("div");
-                div.classList.add("invalid-feedback");
-                div.innerText = "Dieses Feld darf nicht leer sein.";
-                inp.parentNode.insertBefore(div, inp.nextSibling);
-            }
-        }
+        ["input", "textarea", "select"].forEach(tag => document.querySelectorAll(`${tag}:required`).forEach(add_invalid_feedback_if_needed));
     });
+
+    function add_invalid_feedback_if_needed(inp) {
+        if (inp.parentNode.querySelector(".invalid-feedback") == null) {
+            let div = document.createElement("div");
+            div.classList.add("invalid-feedback");
+            div.innerText = "Dieses Feld darf nicht leer sein.";
+            inp.parentNode.insertBefore(div, inp.nextSibling);
+        }
+    }
 </script>
 </body>
 </html>

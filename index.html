@@ -11,16 +11,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
             integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
             crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4/dist/signature_pad.umd.min.js"></script>
 </head>
 <body>
 <form id="registration_form" novalidate>
     <h2>Personalien</h2>
     <div class="mb-3 row">
         <div class="col">
-            <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Vorname" required>
+            <label for="first_name" class="form-label">Vorname</label>
+            <input type="text" class="form-control" id="first_name" name="first_name" required>
         </div>
         <div class="col">
-            <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Nachname" required>
+            <label for="last_name" class="form-label">Nachname</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" required>
         </div>
     </div>
     <div class="mb-3 row">
@@ -145,6 +148,16 @@
         </label>
         <input type="text" class="form-control" id="regularly_taken_medications" name="regularly_taken_medications">
     </div>
+    <div class="mb-3 row">
+        <div class="col">
+            <label for="vaccination_card" class="form-label">Impfausweis</label>
+            <input class="form-control" type="file" id="vaccination_card" name="vaccination_card">
+        </div>
+        <div class="col">
+            <label for="insurance_card" class="form-label">Krankenkassenkarte</label>
+            <input class="form-control" type="file" id="insurance_card" name="insurance_card">
+        </div>
+    </div>
 
     <h2>Anwesenheit</h2>
     <div class="mb-3">
@@ -170,6 +183,16 @@
             Netzwerke, Zeitungen, Lagerblog und die Homepage.</label>
         <div class="invalid-feedback">Diese Checkbox muss aktiviert sein</div>
     </div>
+
+    <h2>Unterschrift</h2>
+    <div class="mb-3">
+        <div class="wrapper">
+            <canvas id="signature-pad" width="400" height="200"></canvas>
+        </div>
+        <div class="clear-btn">
+            <button id="signature-clear" class="btn btn-sm btn-secondary" type="button">Neu beginnen</button>
+        </div>
+    </div>
     <button type="button" class="btn btn-primary" id="form_submit">Anmeldung abschicken</button>
 </form>
 <div id="success" style="display: none">
@@ -181,12 +204,44 @@
     Leider konnte das Formular nicht abgeschickt werden. Bitte versuch es später noch einmal.
 </div>
 <script>
+    async function readFileInputToFormObject(input_id) {
+        const reader = new FileReader();
+        const file = document.getElementById(input_id).files[0];
+        const result = await new Promise((resolve, reject) => {
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+
+        return result.toString();
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
+        const canvas = document.getElementById("signature-pad");
+        const signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(250,250,250)'
+        });
+
+        /*function resizeCanvas() {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            canvas.getContext("2d").scale(ratio, ratio);
+            signaturePad.clear(); // otherwise isEmpty() might return incorrect value
+        }
+
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+        */
+
+        document.getElementById("signature-clear").addEventListener("click", () => signaturePad.clear());
+
+
         const form = document.getElementById("registration_form");
         let success_msg = document.getElementById("success");
         let error_msg = document.getElementById("form_send_error");
 
-        document.getElementById("form_submit").addEventListener("click", event => {
+        document.getElementById("form_submit").addEventListener("click", async event => {
             form.classList.add('was-validated');
             if (!form.checkValidity()) {
                 console.log("form invalid");
@@ -201,7 +256,12 @@
                 xhr.open('POST', functionURL);
                 xhr.setRequestHeader("Content-Type", "application/json");
 
-                xhr.send(JSON.stringify(Object.fromEntries(formData)));
+                let dataObject = Object.fromEntries(formData);
+                dataObject.vaccination_card = await readFileInputToFormObject("vaccination_card");
+                dataObject.insurance_card = await readFileInputToFormObject("insurance_card");
+                dataObject.signature = signaturePad.toDataURL("image/png");
+
+                xhr.send(JSON.stringify(dataObject));
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === XMLHttpRequest.DONE) {
                         if (200 <= xhr.status && xhr.status < 300) {

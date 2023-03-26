@@ -29,7 +29,7 @@
     <div class="mb-3 row">
         <div class="col">
             <label for="birth_date" class="form-label">Geburtsdatum</label>
-            <input type="date" class="form-control" id="birth_date" name="birth_date" required>
+            <input type="date" min="1950-01-01" class="form-control" id="birth_date" name="birth_date" required>
         </div>
         <div class="col">
             <label for="gender" class="form-label">Geschlecht</label>
@@ -64,8 +64,18 @@
 
     <h2>Gruppe</h2>
     <div class="mb-3">
-        <input type="checkbox" class="form-check-input" id="in_jwbr" name="in_jwbr">
-        <label for="in_jwbr" class="form-label">Ich bin in der Schar Jungwacht Blauring Herisau</label>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="in_jwbr" id="in_jwbr_yes" checked value="on">
+            <label class="form-check-label" for="in_jwbr_yes">
+                Ich bin in der Schar Jungwacht Blauring Herisau
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="in_jwbr" id="in_jwbr_no" value="off">
+            <label class="form-check-label" for="in_jwbr_no">
+                Ich bin <b>nicht</b> in der Schar Jungwacht Blauring Herisau
+            </label>
+        </div>
     </div>
     <div class="mb-3">
         <label for="group" class="form-label">Gruppe</label>
@@ -76,7 +86,7 @@
             <option value="Cherokees">JW - Cherokees</option>
             <option value="Mukavajates">JW - Mukavajates</option>
             <option value="Theseus">JW - Theseus</option>
-            <option value="Mevas">BR - Kandis 2022</option>
+            <option value="Mevas">BR - Akinas</option>
             <option value="Mevas">BR - Mevas</option>
             <option value="Picus">BR - Picus</option>
             <option value="Mahinas">BR - Mahinas</option>
@@ -161,18 +171,19 @@
     </div>
 
     <h2>Anwesenheit</h2>
-    <div class="mb-3">
-        <input type="checkbox" class="form-check-input" id="present_week_1" name="present_week_1">
+    <div class="">
+        <input type="checkbox" class="form-check-input" id="present_week_1" name="present_week_1" checked>
         <label for="present_week_1" class="form-check-label">
             Anwesend in der ersten Woche (08.07.2023-15.07.2023)
         </label>
     </div>
-    <div class="mb-3">
-        <input type="checkbox" class="form-check-input" id="present_week_2" name="present_week_2">
+    <div class="">
+        <input type="checkbox" class="form-check-input" id="present_week_2" name="present_week_2" checked>
         <label for="present_week_2" class="form-check-label">
             Anwesend in der zweiten Woche (15.07.2023-22.07.2023)
         </label>
     </div>
+    <div class="form-text mb-3">Aktiviere beide Kästchen, wenn du in beiden Wochen anwesend bist.</div>
 
     <h2>Allgemeines</h2>
     <div class="mb-3">

@@ -207,7 +207,7 @@
         <label for="allow_photos" class="form-check-label position-absolute ms-2">Ich bin damit einverstanden, dass im Lager gemachte Fotos
             von Jungwacht Blauring Herisau weiterverwendet werden dürfen, insbesondere für soziale
             Netzwerke, Zeitungen, Lagerblog und die Homepage.</label>
-        <div class="invalid-feedback">Diese Checkbox muss aktiviert sein</div>
+        <div class="invalid-feedback pt-3">Diese Checkbox muss aktiviert sein</div>
     </div>
 
     <h2>Unterschrift</h2>
@@ -237,6 +237,9 @@
     async function readFileInputToFormObject(input_id) {
         const reader = new FileReader();
         const file = document.getElementById(input_id).files[0];
+        if (file === undefined) {
+            return "";
+        }
         const result = await new Promise((resolve, reject) => {
             reader.onload = () => resolve(reader.result);
             reader.onerror = reject;

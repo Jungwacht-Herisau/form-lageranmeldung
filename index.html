@@ -93,19 +93,19 @@
     <div class="mb-3">
         <label for="group" class="form-label">Gruppe</label>
         <select class="form-select" id="group" name="group" required>
+            <option value="Theseus">JW - Hermanos</option>
             <option value="Ivaros">JW - Ivaros</option>
             <option value="Chanticos">JW - Chanticos</option>
             <option value="Ueblos">JW - Ueblos</option>
             <option value="Cherokees">JW - Cherokees</option>
             <option value="Mukavajates">JW - Mukavajates</option>
-            <option value="Theseus">JW - Theseus</option>
+            <option value="Lacasitas">BR - Philomenas</option>
             <option value="Mevas">BR - Akinas</option>
             <option value="Mevas">BR - Mevas</option>
             <option value="Picus">BR - Picus</option>
             <option value="Mahinas">BR - Mahinas</option>
             <option value="Giblias">BR - Giblias</option>
             <option value="Gorayadas">BR - Gorayadas</option>
-            <option value="Lacasitas">BR - Lacasitas</option>
         </select>
     </div>
 
@@ -154,12 +154,18 @@
         <input type="text" id="allergies" name="allergies" class="form-control">
     </div>
     <div class="mb-3">
-        <input type="checkbox" class="form-check-input" id="tetanus_vaccinated" name="tetanus_vaccinated">
-        <label for="tetanus_vaccinated" class="form-check-label">Gegen Starrkrampf geimpft</label>
-    </div>
-    <div class="mb-3">
         <input type="checkbox" class="form-check-input" id="tick_vaccinated" name="tick_vaccinated">
         <label for="tick_vaccinated" class="form-check-label">Gegen Zecken geimpft</label>
+    </div>
+    <div class="mb-3">
+        <input type="checkbox" class="form-check-input" id="tetanus_vaccinated" name="tetanus_vaccinated">
+        <label for="tetanus_vaccinated" class="form-check-label">
+            Gegen Starrkrampf geimpft (auch Tetanus genannt)
+        </label>
+    </div>
+    <div class="mb-3">
+        <label for="last_tetanus_date" class="form-label">Datum der letzten Starrkrampfimpfung</label>
+        <input type="date" class="form-control" id="last_tetanus_date" name="last_tetanus_date">
     </div>
     <div class="mb-3">
         <label class="form-label" for="diseases">Vorliegende Erkrankungen</label>
@@ -325,6 +331,13 @@
         </label>
         <div class="invalid-feedback pt-3">Diese Checkbox muss aktiviert sein</div>
     </div>
+    <div class="mb-3">
+        <input type="checkbox" class="form-check-input" id="allow_privacy" name="allow_privacy" required>
+        <label for="allow_privacy" class="form-check-label">
+            Ich bin mit der <a href="https://jwbr.jimdo.com/app/download/12500444712/%C3%96ffentlicheDatenschutzerkl%C3%A4rung.pdf">Datenschutzerklärung</a> einverstanden.
+        </label>
+        <div class="invalid-feedback pt-3">Diese Checkbox muss aktiviert sein</div>
+    </div>
 
     <h2>Unterschrift</h2>
     <div class="mb-3">
@@ -366,6 +379,16 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+        let tetanus_vaccinated = document.getElementById("tetanus_vaccinated");
+        let last_tetanus_date = document.getElementById("last_tetanus_date").parentElement;
+        let update_tetanus_date = () => {
+            last_tetanus_date.required = tetanus_vaccinated.checked;
+            last_tetanus_date.style.display = tetanus_vaccinated.checked ? "initial" : "none";
+        };
+        tetanus_vaccinated.addEventListener("change", update_tetanus_date);
+        update_tetanus_date();
+
+
         const canvas = document.getElementById("signature-pad");
         const signaturePad = new SignaturePad(canvas, {
             backgroundColor: 'rgb(250,250,250)'

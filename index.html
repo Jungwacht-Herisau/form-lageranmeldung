@@ -380,7 +380,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         let tetanus_vaccinated = document.getElementById("tetanus_vaccinated");
-        let last_tetanus_date = document.getElementById("last_tetanus_date").parentElement;
+        let last_tetanus_date = document.getElementById("last_tetanus_date");
         let update_tetanus_date = () => {
             last_tetanus_date.required = tetanus_vaccinated.checked;
             last_tetanus_date.style.display = tetanus_vaccinated.checked ? "initial" : "none";

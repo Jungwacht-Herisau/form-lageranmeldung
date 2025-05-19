@@ -351,7 +351,10 @@
     <div class="invalid-feedback" id="form_not_complete_message">
         Das Formular ist noch nicht vollständig ausgefüllt. Bitte korrigiere die rot umrahmten Felder.
     </div>
-    <button type="button" class="btn btn-primary" id="form_submit">Anmeldung abschicken</button>
+    <button type="button" class="btn btn-primary" id="form_submit">
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none" id="form_submit_spinner"></span>
+        Anmeldung abschicken
+    </button>
 </form>
 <div id="success" style="display: none">
     <h2>Anmeldung abgeschickt</h2>
@@ -413,8 +416,10 @@
         let success_msg = document.getElementById("success");
         let error_msg = document.getElementById("form_send_error");
         let form_incomplete_msg = document.getElementById("form_not_complete_message");
+        let form_submit = document.getElementById("form_submit");
+        let form_submit_spinner = document.getElementById("form_submit_spinner");
 
-        document.getElementById("form_submit").addEventListener("click", async event => {
+        form_submit.addEventListener("click", async event => {
             form.classList.add('was-validated');
             let formValid = form.checkValidity();
             form_incomplete_msg.style.display = formValid ? "none" : "block";
@@ -436,9 +441,13 @@
                 dataObject.insurance_card = await readFileInputToFormObject("insurance_card");
                 dataObject.signature = signaturePad.toDataURL("image/png");
 
+                form_submit.disabled = true;
+                form_submit_spinner.style.removeProperty("display");
                 xhr.send(JSON.stringify(dataObject));
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === XMLHttpRequest.DONE) {
+                        form_submit.disabled = false;
+                        form_submit_spinner.style.display = "none";
                         if (200 <= xhr.status && xhr.status < 300) {
                             form.reset();
                             form.style.display = "none";
